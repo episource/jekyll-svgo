@@ -3,6 +3,19 @@ module Jekyll
 
         class SvgoFile < Jekyll::StaticFile
 
+            # Returns a new hash with the file specific svgo configuration.
+            def configure()
+                origConfig = @site.config['svgo'] || {}
+                generatedConfig = origConfig.clone
+                generatedConfig.delete_if {|k, v| k.end_with?('.svg')}
+
+                if origConfig.key?(@name)
+                    generatedConfig.merge!(origConfig[@name])
+                end
+
+                generatedConfig
+            end
+
             # Optimize SVG
             #   +dest+ is the String path to the destination dir
             #
@@ -15,22 +28,22 @@ module Jekyll
 
                 FileUtils.mkdir_p(File.dirname(dest_path))
                 begin
-                    inConf = @site.config['svgo'] || {}
-                    generatedConf = inConf.clone
+                    config = configure()
 
-                    if (generatedConf['multipass'] == 'safe')
-                        generatedConf['multipass'] = true
-                        generatedConf['floatPrecision'] = 6
+                    if (config['multipass'] == 'safe')
+                        precision = config['floatPrecision']
+                        config['multipass'] = true
+                        config['floatPrecision'] = 6
 
-                        content = SvgoWrapper::Svgo.new(generatedConf).optimize_file(path)
+                        content = SvgoWrapper::Svgo.new(config).optimize_file(path)
 
-                        generatedConf['multipass'] = false
-                        generatedConf['floatPrecision'] = inConf['floatPrecision']
+                        config['multipass'] = false
+                        config['floatPrecision'] = precision
                     else
                         content = File.read(path)
                     end
 
-                    content = SvgoWrapper::Svgo.new(generatedConf).optimize(content)
+                    content = SvgoWrapper::Svgo.new(config).optimize(content)
                     File.open(dest_path, 'w') do |f|
                         f.write(content)
                     end

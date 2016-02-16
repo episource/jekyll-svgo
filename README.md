@@ -20,3 +20,26 @@ In addition to svgo's default options, the jekyll plugin adds `multipass: safe`:
 be processed twice. The first time with `multipass: true` and a reasonably high `floatPrecision` (currently 6). The
 second time with `multipass: false` and the `floatPrecision` configured in _config.yml. This prevents visible artifacts
 due to repeated rounding.
+
+### File specific configuration
+
+The configuration can also be adjusted on a file to file basis. The global configuration is then merged with the file
+specific configuration: The final configuration consists of all (top-level) configuration entries of the global
+configuration plus all (top-level) configuration entries of the file specific configuration with all (top-level) entries
+defined twice overwritten by the file specific configuration.
+
+    svgo:
+      multipass: false
+      floatPrecision: 2 
+      plugins:
+        - cleanupIDs: false
+      my_file.svg:
+        floatPrecision: 1
+        plugins:
+          - removeRasterImages: true
+      
+      # effective configuration for my_file.svg:
+      #   multipass: false
+      #   floatPrecision: 1
+      #   plugins:
+      #     - removeRasterImages:true
