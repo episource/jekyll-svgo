@@ -15,7 +15,22 @@ module Jekyll
 
                 FileUtils.mkdir_p(File.dirname(dest_path))
                 begin
-                    content = SvgoWrapper::Svgo.new(@site.config['svgo'] || {}).optimize_file(path)
+                    inConf = @site.config['svgo'] || {}
+                    generatedConf = inConf.clone
+
+                    if (generatedConf['multipass'] == 'safe')
+                        generatedConf['multipass'] = true
+                        generatedConf['floatPrecision'] = 6
+
+                        content = SvgoWrapper::Svgo.new(generatedConf).optimize_file(path)
+
+                        generatedConf['multipass'] = false
+                        generatedConf['floatPrecision'] = inConf['floatPrecision']
+                    else
+                        content = File.read(path)
+                    end
+
+                    content = SvgoWrapper::Svgo.new(generatedConf).optimize(content)
                     File.open(dest_path, 'w') do |f|
                         f.write(content)
                     end

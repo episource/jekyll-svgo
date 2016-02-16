@@ -15,3 +15,8 @@ Configure svgo by adding a svgo node to your _config.yml. All configuration opti
       floatPrecision: 2 
       plugins:
         - cleanupIDs: false
+
+In addition to svgo's default options, the jekyll plugin adds `multipass: safe`: In safe multipass mode, every image will
+be processed twice. The first time with `multipass: true` and a reasonably high `floatPrecision` (currently 6). The
+second time with `multipass: false` and the `floatPrecision` configured in _config.yml. This prevents visible artifacts
+due to repeated rounding.
