@@ -2,6 +2,7 @@ module Jekyll
     module Svgo
 
         class SvgoFile < Jekyll::StaticFile
+            @@mtimes = {}
 
             # Returns a new hash with the file specific svgo configuration.
             def configure()
