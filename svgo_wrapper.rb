@@ -46,8 +46,10 @@ module SvgoWrapper
         #
         # Returns the optimized svg as string or yields an IO object to a block.
         def optimize_file(file)
-            tempfileConfig = Tempfile.new('SvgoWrapper.Config')
-            tempfileConfig.write(@config.to_yaml)
+            tempfileConfig = Tempfile.new(['SvgoWrapper.Config','.mjs'])
+            tempfileConfig.write("export default ")
+            tempfileConfig.write(@config.to_json)
+            tempfileConfig.write(";")
             tempfileConfig.flush
 
             begin
