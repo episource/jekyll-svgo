@@ -8,13 +8,16 @@ A Jekyll plugin that automatically optimizes/minifies svg images using [svgo](ht
 
 ## Configure
 
-Configure svgo by adding a svgo node to your _config.yml. All configuration options valid inside a [svgo configuration file](https://github.com/svg/svgo/blob/master/docs/how-it-works/en.md) are supported.
+Configure svgo by adding a svgo node to your _config.yml. All configuration options valid inside a [svgo configuration file](https://github.com/svg/svgo/blob/main/README.md#configuration) are supported.
 
     svgo:
       multipass: false
-      floatPrecision: 2 
+      floatPrecision: 2
       plugins:
-        - cleanupIDs: false
+        - name: preset-default
+          params:
+            overrides:
+              cleanupIds: false
 
 In addition to svgo's default options, the jekyll plugin adds `multipass: safe`: In safe multipass mode, every image will
 be processed twice. The first time with `multipass: true` and a reasonably high `floatPrecision` (currently 6). The
@@ -32,14 +35,12 @@ defined twice overwritten by the file specific configuration.
       multipass: false
       floatPrecision: 2 
       plugins:
-        - cleanupIDs: false
+        - name: preset-default
+          params:
+            overrides:
+              cleanupIds: false
       my_file.svg:
         floatPrecision: 1
-        plugins:
-          - removeRasterImages: true
       
       # effective configuration for my_file.svg:
-      #   multipass: false
-      #   floatPrecision: 1
-      #   plugins:
-      #     - removeRasterImages:true
+      #   export default {"multipass":false,"floatPrecision":1,"plugins":[{"name":"preset-default","params":{"overrides":{"cleanupIds":false}}}]};
